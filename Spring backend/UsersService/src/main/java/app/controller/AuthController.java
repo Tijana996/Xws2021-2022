@@ -3,10 +3,8 @@ package app.controller;
 import app.dto.LoginRequestDTO;
 import app.dto.LoginResponseDTO;
 import app.dto.RegistrationDTO;
-import app.dto.ValidateTokenResponseDTO;
 import app.models.User;
 import app.repository.UserRepository;
-import app.security.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,28 +22,23 @@ public class AuthController {
     UserRepository repository;
 
     @Autowired
-    private JWTUtil jwtUtil;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("login")
-    ResponseEntity<?> login(@RequestBody LoginRequestDTO requestData) {
+    ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO requestData) {
+        LoginResponseDTO dto = new LoginResponseDTO();
         Optional<User> optional = repository.findByUsername(requestData.getUsername());
         if (optional.isPresent()) {
             User user = optional.get();
             if (passwordEncoder.matches(requestData.getPassword(), user.getPassword())) {
-                String token = jwtUtil.generateToken(user.getId());
-                LoginResponseDTO dto = new LoginResponseDTO();
-                dto.setToken(token);
                 dto.setUserId(user.getId());
                 dto.setName(user.getName());
                 return new ResponseEntity<>(dto, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(dto, HttpStatus.FORBIDDEN);
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(dto, HttpStatus.FORBIDDEN);
         }
     }
 
@@ -64,18 +57,5 @@ public class AuthController {
                         requestData.getUsername(),
                         password));
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("validate-token")
-    ResponseEntity<?> validateToken(@RequestHeader String authorization) {
-        if (authorization.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        String token = authorization.split(" ")[1];
-        String userId = jwtUtil.validateTokenAndRetrieveSubject(token);
-        ValidateTokenResponseDTO dto = new ValidateTokenResponseDTO();
-        dto.setUserId(userId);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

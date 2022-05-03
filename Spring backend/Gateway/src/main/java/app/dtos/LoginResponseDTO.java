@@ -1,4 +1,4 @@
-package app.dto;
+package app.dtos;
 
 import lombok.Data;
 
@@ -7,5 +7,4 @@ public class LoginResponseDTO {
     private String token;
     private String userId;
     private String name;
-
 }

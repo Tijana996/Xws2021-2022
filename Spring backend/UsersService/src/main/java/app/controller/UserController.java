@@ -12,16 +12,11 @@ import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/users")
+@RequestMapping(path = "/users")
 public class UserController {
 
     @Autowired
     UserRepository repository;
-
-    @GetMapping()
-    List<User> all() {
-        return repository.findAll();
-    }
 
     @GetMapping("/{userId}")
     ResponseEntity<?> getUserDataById(@PathVariable String userId) {
@@ -67,7 +62,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/find/")
+    @GetMapping("/find")
     ResponseEntity<?> findUsersByName(@RequestParam String name, @RequestParam Optional<String> ignoredId) {
         Optional<List<User>> optional = repository.findByNameStartsWithIgnoreCase(name);
         String idToIgnore = ignoredId.orElse("");
@@ -94,7 +89,7 @@ public class UserController {
 
             return new ResponseEntity<>(dtos, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
         }
     }
 
