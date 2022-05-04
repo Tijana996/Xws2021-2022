@@ -94,7 +94,8 @@ function SearchUsers(props) {
 
 function mapStateToProps(state) {
     return {
-        userId: state.userId
+        userId: state.userId,
+        token: state.token
     }
 }
 

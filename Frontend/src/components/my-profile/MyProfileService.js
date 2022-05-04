@@ -1,8 +1,8 @@
 import axios from "../../api/axios";
 
 
-function getProfileAndPosts(userId) {
-    return axios.get('posts/user/' + userId);
+function getProfileAndPosts(userId, token) {
+    return axios.get('posts/user/' + userId, {headers: {authorization: token}});
 }
 
 export {

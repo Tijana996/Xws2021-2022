@@ -15,7 +15,7 @@ function MyProfile(props) {
     const newPostText = useRef();
 
     useEffect(() => {
-        getProfileAndPosts(props.userId).then(response => {
+        getProfileAndPosts(props.userId, props.token).then(response => {
             setProfile({
                 name: response.data.name,
                 lastName: response.data.lastName,
@@ -31,7 +31,7 @@ function MyProfile(props) {
             userId: props.userId,
             userName: profile.name,
             userLastName: profile.lastName
-        }).then(response => {
+        }, props.token).then(response => {
             newPostText.current.value = "";
             getProfileAndPosts(props.userId).then(response => {
                 setProfile({
@@ -88,7 +88,8 @@ function MyProfile(props) {
 
 function mapStateToProps(state) {
     return {
-        userId: state.userId
+        userId: state.userId,
+        token: state.token
     }
 }
 

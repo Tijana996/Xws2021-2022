@@ -36,7 +36,7 @@ function UserProfile(props) {
     }
     
     useEffect(() => {
-        fetchUserData(props.userId).then(response => {
+        fetchUserData(props.userId, props.token).then(response => {
             setProfile({
                 name: response.data.name || "",
                 surname: response.data.surname || "",
@@ -47,14 +47,14 @@ function UserProfile(props) {
                 education: response.data.education || "",
                 workingExperience: response.data.workingExperience || "",
                 hoby: response.data.hoby || "",
-                privateProfile: response.data.privateProfile})
+                privateProfile: response.data.privateProfile}, props.token)
         });
     }, []);
 
     function saveUserData() {
         setShowingSpinner(true);
         const userId = localStorage.getItem("userId");
-        saveUserProfile(profile, userId).then(response => {
+        saveUserProfile(profile, userId, props.token).then(response => {
             createSuccessAlert("Uspešno sačuvano");
         }).catch(error => {
             createErrorAlert("Greška se dogodila");
@@ -118,7 +118,8 @@ function UserProfile(props) {
 
 function mapStateToProps(state) {
     return {
-        userId: state.userId
+        userId: state.userId,
+        token: state.token
     }
 }
 

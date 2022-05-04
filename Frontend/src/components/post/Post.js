@@ -19,6 +19,8 @@ function Post(props) {
                     <div className="fb-time-action" style={{padding: '15px 0'}}>
                     <span title="Like this" style={{marginRight: '5px', color: '#2972a1'}}>Like</span>
                     <span style={{marginRight: '5px', color: '#5a5a5a'}}>-</span>
+                    <span title="Dislike this" style={{marginRight: '5px', color: '#2972a1'}}>Dislike</span>
+                    <span style={{marginRight: '5px', color: '#5a5a5a'}}>-</span>
                     <span title="Leave a comment" style={{marginRight: '5px', color: '#2972a1'}}>Comments</span>
                 </div>
             </div>
