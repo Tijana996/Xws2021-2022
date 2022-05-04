@@ -33,6 +33,8 @@ public class PostsContoller {
             dto.setId(post.getId());
             dto.setContent(post.getContent());
             dto.setTimestamp(post.getTimestamp());
+            dto.setUserName(post.getUserName());
+            dto.setUserLastName(post.getUserLastName());
             dtos.add(dto);
         });
 
@@ -45,6 +47,8 @@ public class PostsContoller {
         newPost.setContent(requestBody.getContent());
         newPost.setUserId(requestBody.getUserId());
         newPost.setTimestamp(LocalDateTime.now());
+        newPost.setUserName(requestBody.getUserName());
+        newPost.setUserLastName(requestBody.getUserLastName());
 
         postsRepository.save(newPost);
         return new ResponseEntity<>(HttpStatus.OK);

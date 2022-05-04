@@ -18,4 +18,8 @@ public class Post {
     private LocalDateTime timestamp;
 
     private String userId;
+
+    private String userName;
+
+    private String userLastName;
 }
