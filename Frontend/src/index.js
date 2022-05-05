@@ -15,7 +15,7 @@ let userId = null;
 let role = null;
 
 const authorizationHeader = token === null ? '' : 'Bearer ' + token;
-axios.get('/auth/validate-token', {headers: {authorization: authorizationHeader}}).then(response => {
+axios.get('/auth/validate-token', {headers: {Authorization: authorizationHeader}}).then(response => {
     if(!response.data.userId) {
         token = null;
         role = null;

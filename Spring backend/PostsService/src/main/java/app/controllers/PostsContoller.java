@@ -42,7 +42,7 @@ public class PostsContoller {
     }
 
     @PostMapping("")
-    ResponseEntity<?> addNewComment(@RequestBody SavePostDTO requestBody) {
+    ResponseEntity<?> addNewPost(@RequestBody SavePostDTO requestBody) {
         Post newPost = new Post();
         newPost.setContent(requestBody.getContent());
         newPost.setUserId(requestBody.getUserId());

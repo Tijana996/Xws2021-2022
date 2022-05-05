@@ -5,7 +5,6 @@ import Navbar from "./components/common/navbar/Navbar";
 import { Route, Switch } from "react-router-dom";
 import Login from "./components/login/Login";
 import Register from  "./components/register/Register";
-import Users from "./components/users/Users";
 import ChangePassword from "./components/users/ChangePassword";
 import {connect} from "react-redux";
 import AlertsContainer from "./components/alerts/AlertsContainer";
@@ -27,7 +26,6 @@ function App(props) {
         <Navbar />
         <Switch>
             <Route path="/change-password/:userId" exact component={ChangePassword} />
-            <Route path="/users/" exact component={Users} />
             <Route path="/login" exact component={Login} />
             <Route path="/register" exact component={Register} />
             <Route path="/configure-profile" exact component={UserProfile} />

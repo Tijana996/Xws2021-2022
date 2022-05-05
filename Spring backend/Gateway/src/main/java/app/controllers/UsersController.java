@@ -2,6 +2,7 @@ package app.controllers;
 
 import app.dtos.UserDataDTO;
 import app.handlers.CustomRestTemplateError;
+import app.security.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -22,8 +23,15 @@ public class UsersController {
     @Qualifier("usersServiceRestTemplate")
     RestTemplate userServicesRestTemplate;
 
+    @Autowired
+    JWTUtil jwtUtil;
+
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserDataById(@PathVariable String userId) {
+    public ResponseEntity<?> getUserDataById(@RequestHeader Optional<String> authorization, @PathVariable String userId) {
+        if (!jwtUtil.validateHeader(authorization)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         try {
             return userServicesRestTemplate.getForEntity("/users/" + userId, UserDataDTO.class);
         } catch (CustomRestTemplateError error) {
@@ -32,7 +40,11 @@ public class UsersController {
     }
 
     @PutMapping("/{userId}")
-    ResponseEntity<?> updateUserDataById(@PathVariable String userId, @RequestBody UserDataDTO userData) {
+    ResponseEntity<?> updateUserDataById(@RequestHeader Optional<String> authorization, @PathVariable String userId, @RequestBody UserDataDTO userData) {
+        if (!jwtUtil.validateHeader(authorization)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 

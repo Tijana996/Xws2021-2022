@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Configuration
 public class JWTUtil {
@@ -32,5 +33,15 @@ public class JWTUtil {
                 .build();
         DecodedJWT jwt = verifier.verify(token);
         return jwt.getClaim("userId").asString();
+    }
+
+    public boolean validateHeader(Optional<String> header) {
+        if (header.isPresent()) {
+            String parsedHeader = header.get().split(" ")[1];
+            String userId = this.validateTokenAndRetrieveSubject(parsedHeader);
+            return userId != null;
+        }
+
+        return false;
     }
 }
