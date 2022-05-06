@@ -3,7 +3,7 @@ import {fetchUserData, saveUserProfile} from './UserService';
 import {createErrorAlert, createSuccessAlert} from "../../alertHelper";
 import {connect} from "react-redux";
 
-function UserProfile(props) {
+function ConfigureProfile(props) {
 
     const [profile, setProfile] = useState({
         id: null,
@@ -123,4 +123,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(UserProfile);
+export default connect(mapStateToProps)(ConfigureProfile);

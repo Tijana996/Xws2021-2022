@@ -8,9 +8,11 @@ import Register from  "./components/register/Register";
 import ChangePassword from "./components/users/ChangePassword";
 import {connect} from "react-redux";
 import AlertsContainer from "./components/alerts/AlertsContainer";
-import UserProfile from './components/users/UserProfile';
+import ConfigureProfile from './components/users/ConfigureProfile';
 import SearchUsers from './components/search-users/SearchUsers';
-import MyProfile from './components/my-profile/MyProfile';
+import Profile from './components/profile/Profile';
+import MyProfile from './components/profile/MyProfile';
+import UserProfile from './components/profile/UserProfile';
 
 
 function App(props) {
@@ -28,8 +30,9 @@ function App(props) {
             <Route path="/change-password/:userId" exact component={ChangePassword} />
             <Route path="/login" exact component={Login} />
             <Route path="/register" exact component={Register} />
-            <Route path="/configure-profile" exact component={UserProfile} />
+            <Route path="/configure-profile" exact component={ConfigureProfile} />
             <Route path="/my-profile" exact component={MyProfile} />
+            <Route path="/profiles/:userId" exact component={UserProfile} />
             <Route path="/search-users" exact component={SearchUsers} />
             <Route path="/" exact component={HomePage} />
             <Route component={NotFoundPage} />

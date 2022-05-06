@@ -82,7 +82,7 @@ public class UserController {
                 userData.setHoby(user.getHoby());
                 userData.setWorkingExperience(user.getWorkingExperience());
                 userData.setPrivateProfile(user.isPrivateProfile());
-                if (!user.getId().equals(idToIgnore) && !user.isPrivateProfile()) {
+                if (!user.getId().equals(idToIgnore)) {
                     dtos.add(userData);
                 }
             });

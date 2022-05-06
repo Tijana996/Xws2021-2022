@@ -21,7 +21,7 @@ function fetchUserData(userId, token) {
 }
 
 function saveUserProfile(requestBody, userId, token) {
-    return axios.put('/users/' + userId, requestBody,{headers: {authorization: token}});
+    return axios.put('/users/' + userId, requestBody, {headers: {authorization: token}});
 }
 
 export {

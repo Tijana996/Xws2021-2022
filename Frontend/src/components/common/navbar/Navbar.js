@@ -33,11 +33,6 @@ function Navbar(props) {
                     <li className="nav-item">
                         <Link to="/" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faHome} />Početna</Link>
                     </li>
-                    {props.isAdmin?
-                        <li className="nav-item">
-                            <Link to="/search-users" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faSearch} />Pretraga korisnika</Link>
-                        </li>:null
-                    }
                     <li className="nav-item">
                             <Link to="/search-users" className="nav-link"><FontAwesomeIcon className="h5 mr-2 mb-0" icon={faSearch} />Pretraga korisnika</Link>
                     </li>

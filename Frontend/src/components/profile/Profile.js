@@ -1,24 +1,27 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { getProfileAndPosts } from './MyProfileService';
+import { getProfileAndPosts } from './ProfileService';
 import { connect } from 'react-redux';
 import Post from '../post/Post';
 import { saveNewPost } from '../post/PostService';
 
-function MyProfile(props) {
+function Profile(props) {
 
     const [profile, setProfile] = useState({
         name: "",
         lastName: "",
+        isPrivateProfile: false,
         posts: []
     });
 
     const newPostText = useRef();
 
     useEffect(() => {
-        getProfileAndPosts(props.userId, props.token).then(response => {
+        const userId = props.requestUserId ? props.requestUserId : props.userId;
+        getProfileAndPosts(userId, props.token).then(response => {
             setProfile({
                 name: response.data.name,
                 lastName: response.data.lastName,
+                isPrivateProfile: response.data.privateProfile,
                 posts: response.data.posts
             });
         });
@@ -26,14 +29,15 @@ function MyProfile(props) {
 
     function savePostHandler() {
         const postText = newPostText.current.value;
+        const userId = props.requestUserId ? props.requestUserId : props.userId;
         saveNewPost({
             content: postText,
-            userId: props.userId,
+            userId: userId,
             userName: profile.name,
             userLastName: profile.lastName
         }, props.token).then(response => {
             newPostText.current.value = "";
-            getProfileAndPosts(props.userId).then(response => {
+            getProfileAndPosts(userId, props.token).then(response => {
                 setProfile({
                     name: response.data.name,
                     lastName: response.data.lastName,
@@ -67,7 +71,7 @@ function MyProfile(props) {
                     </div>
                 </div>
 
-                <div className="panel profile-info" style={{width: "100%", marginBottom: '20px'}}>
+                <div className="panel profile-info" style={{width: "100%", marginBottom: '20px'}} hidden={props.requestUserId}>
                     <form>
                      <textarea ref={newPostText} className="form-control input-lg p-text-area" rows={2} placeholder="O čemu razmišljate?" style={{border: 'none', fontWeight: 300, boxShadow: 'none', color: '#c3c3c3', fontSize: '16px'}} defaultValue={""} />
                     </form>
@@ -77,8 +81,14 @@ function MyProfile(props) {
                     </footer>
                 </div>
                 
-                {profile.posts.length === 0 && <h5 className="mt-5">Nema dosadašnjih objava.</h5>}
-                {profile.posts.map(post => <Post key={post.id} post={post} />)}
+                {props.requestUserId && profile.isPrivateProfile ? 
+                    <h5 className="mt-5">Profil je privatan.</h5> :
+                    <>
+                        {profile.posts.length === 0 && <h5 className="mt-5">Nema dosadašnjih objava.</h5>}
+                        {profile.posts.map(post => <Post key={post.id} post={post} />)}
+                    </>
+                }
+                
                 </div>
             </div>
         </div>
@@ -93,4 +103,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(MyProfile);
+export default connect(mapStateToProps)(Profile);

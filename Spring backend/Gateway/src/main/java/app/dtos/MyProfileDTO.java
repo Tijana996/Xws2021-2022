@@ -8,5 +8,6 @@ import java.util.List;
 public class MyProfileDTO {
     private String name;
     private String lastName;
+    private boolean privateProfile;
     private List<PostDTO> posts;
 }

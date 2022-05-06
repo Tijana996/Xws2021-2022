@@ -43,6 +43,7 @@ public class PostsController {
                 MyProfileDTO myProfile = new MyProfileDTO();
                 myProfile.setName(userData.getName());
                 myProfile.setLastName(userData.getSurname());
+                myProfile.setPrivateProfile(userData.isPrivateProfile());
                 myProfile.setPosts(posts);
                 return new ResponseEntity<>(myProfile, HttpStatus.OK);
             } catch (CustomRestTemplateError error) {

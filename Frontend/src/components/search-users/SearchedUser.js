@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function SearchedUser(props) {
     return (    
@@ -14,7 +15,7 @@ function SearchedUser(props) {
                 </div>
                 <div className="media-body">
                 <h4 className="media-heading" style={{ fontSize: 16, fontWeight: 500 }} >
-                    {props.profile.name} {props.profile.surname}
+                    <Link to={`profiles/${props.profile.id}`}>{props.profile.name} {props.profile.surname}</Link>
                 </h4>
                 <div className="media-content" style={{ marginTop: 5 }}>
                     <i className="fa fa-map-marker" /> 
