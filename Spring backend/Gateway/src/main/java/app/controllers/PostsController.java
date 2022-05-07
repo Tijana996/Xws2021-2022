@@ -32,9 +32,6 @@ public class PostsController {
 
     @GetMapping("/user/{userId}")
     ResponseEntity<?> getPostsByUser(@RequestHeader Optional<String> authorization, @PathVariable String userId) {
-        if (!jwtUtil.validateHeader(authorization)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
 
         try {
             UserDataDTO userData = userServicesRestTemplate.getForEntity("/users/" + userId, UserDataDTO.class).getBody();

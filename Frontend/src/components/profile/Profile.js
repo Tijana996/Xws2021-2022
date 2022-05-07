@@ -104,7 +104,7 @@ function Profile(props) {
                     <h5 className="mt-5">Profil je privatan.</h5> :
                     <>
                         {profile.posts.length === 0 && <h5 className="mt-5">Nema dosadašnjih objava.</h5>}
-                        {profile.posts.map(post => <Post handleSavingComment={saveComment} key={post.id} post={post} />)}
+                        {profile.posts.map(post => <Post handleSavingComment={saveComment} key={post.id} post={post} commentingAllowed={props.userId !== null} />)}
                     </>
                 }
                 

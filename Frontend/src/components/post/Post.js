@@ -46,6 +46,7 @@ function Post(props) {
 
                 <ul className="fb-comments" style={{listStyleType: 'none'}}>
                     {props.post.comments.map(comment => <Comment key={comment.id} comment={comment} />)}
+                    {props.commentingAllowed ?
                     <li style={{margin: '0 -15px 0 -15px', padding: '15px', borderTop: '1px solid #ebeef5'}}>
                         <span className="cmt-thumb" style={{width: '50px', float: 'left', marginRight: '15px'}}>
                         <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" style={{width: '50px'}} /></span>
@@ -53,7 +54,9 @@ function Post(props) {
                         <div className="cmt-form" style={{display: 'inline-block', width: '90%'}}>
                             <input type="text" className="form-control" placeholder="Unesite komentar" style={{height: '50px', lineHeight: '35px'}} onKeyUp={handleCommentInputChange} />
                         </div>
-                    </li>
+                    </li> : null
+                    }
+                    
                 </ul>
                 <div className="clearfix" /></div>
             </div>
