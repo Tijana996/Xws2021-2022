@@ -35,6 +35,7 @@ public class PostsContoller {
             dto.setTimestamp(post.getTimestamp());
             dto.setUserName(post.getUserName());
             dto.setUserLastName(post.getUserLastName());
+            dto.setComments(post.getComments());
             dtos.add(dto);
         });
 

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { getProfileAndPosts } from './ProfileService';
+import { getProfileAndPosts, saveNewComment } from './ProfileService';
 import { connect } from 'react-redux';
 import Post from '../post/Post';
 import { saveNewPost } from '../post/PostService';
@@ -37,6 +37,25 @@ function Profile(props) {
             userLastName: profile.lastName
         }, props.token).then(response => {
             newPostText.current.value = "";
+            getProfileAndPosts(userId, props.token).then(response => {
+                setProfile({
+                    name: response.data.name,
+                    lastName: response.data.lastName,
+                    posts: response.data.posts
+                });
+            });
+        });
+    }
+
+    function saveComment(postId, comment) {
+        saveNewComment({
+            postId: postId,
+            content: comment,
+            userName: profile.name,
+            userSurname: profile.lastName,
+            userId: props.userId
+        }, props.token).then(response => {
+            const userId = props.requestUserId ? props.requestUserId : props.userId;
             getProfileAndPosts(userId, props.token).then(response => {
                 setProfile({
                     name: response.data.name,
@@ -85,7 +104,7 @@ function Profile(props) {
                     <h5 className="mt-5">Profil je privatan.</h5> :
                     <>
                         {profile.posts.length === 0 && <h5 className="mt-5">Nema dosadašnjih objava.</h5>}
-                        {profile.posts.map(post => <Post key={post.id} post={post} />)}
+                        {profile.posts.map(post => <Post handleSavingComment={saveComment} key={post.id} post={post} />)}
                     </>
                 }
                 

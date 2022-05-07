@@ -1,6 +1,16 @@
 import React from "react";
+import Comment from "../comments/Comment";
 
 function Post(props) {
+    
+    function handleCommentInputChange(event) {
+        if (event.key === 'Enter' && event.target.value !== "") {
+            props.handleSavingComment(props.post.id, event.target.value);
+            event.target.value = "";
+        }
+
+    }
+
     return (
         <div className="panel w-100 mb-2">
             <div className="panel-body" style={{background: '#fff', padding: "15px"}}>
@@ -35,21 +45,13 @@ function Post(props) {
                 </div>
 
                 <ul className="fb-comments" style={{listStyleType: 'none'}}>
-                    <li style={{margin: '0 -15px 0 -15px', padding: '15px', borderTop: '1px solid #ebeef5', display: 'none'}}>
-                        <span className="cmt-thumb" style={{width: '50px', float: 'left', marginRight: '15px'}}>
-                        <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" style={{width: '50px'}} /></span>
-                        <div className="cmt-details" style={{paddingTop: '5px'}}>
-                        <span style={{fontSize: '14px', fontWeight: 'bold'}}>Jhone due</span>
-                        <span> is world famous professional photographer.  with forward thinking clients to create beautiful, </span>
-                        <p>40 minutes ago - <span className="like-link" style={{fontSize: '12px', fontWeight: 'normal'}}>Like</span></p>
-                        </div>
-                    </li>
+                    {props.post.comments.map(comment => <Comment key={comment.id} comment={comment} />)}
                     <li style={{margin: '0 -15px 0 -15px', padding: '15px', borderTop: '1px solid #ebeef5'}}>
                         <span className="cmt-thumb" style={{width: '50px', float: 'left', marginRight: '15px'}}>
                         <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" style={{width: '50px'}} /></span>
 
                         <div className="cmt-form" style={{display: 'inline-block', width: '90%'}}>
-                            <textarea className="form-control" placeholder="Write a comment..." style={{height: '50px', lineHeight: '35px'}} defaultValue={""} />
+                            <input type="text" className="form-control" placeholder="Unesite komentar" style={{height: '50px', lineHeight: '35px'}} onKeyUp={handleCommentInputChange} />
                         </div>
                     </li>
                 </ul>
