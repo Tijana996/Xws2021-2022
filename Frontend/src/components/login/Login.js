@@ -34,11 +34,12 @@ function Login(props) {
                 props.setAuthData({
                     token: response.data.token,
                     userName: response.data.name,
-                    // role: response.data.content.role,
+                    userLastName: response.data.lastName,
                     id: response.data.userId,
                 });
                 localStorage.setItem('Token', response.data.token);
                 localStorage.setItem('userName', response.data.name);
+                localStorage.setItem('userLastName', response.data.lastName);
                 localStorage.setItem('userId', response.data.userId);
                 history.push('/');
             }
@@ -81,7 +82,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         setAuthData: (user) => {dispatch({type: 'SET_AUTH_FIELDS', token: user.token, userName: user.userName,
-            role: user.role, userId: user.id})}
+            userLastName: user.userLastName, role: user.role, userId: user.id})}
     }
 }
 

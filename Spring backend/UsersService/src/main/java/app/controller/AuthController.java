@@ -33,6 +33,7 @@ public class AuthController {
             if (passwordEncoder.matches(requestData.getPassword(), user.getPassword())) {
                 dto.setUserId(user.getId());
                 dto.setName(user.getName());
+                dto.setLastName(user.getLastName());
                 return new ResponseEntity<>(dto, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(dto, HttpStatus.FORBIDDEN);

@@ -9,7 +9,17 @@ function saveNewComment(requestBody, token) {
     return axios.post('comments', requestBody, {headers: {authorization: token}});
 }
 
+function likePost(requestBody, token) {
+    return axios.post('posts/like', requestBody, {headers: {authorization: token}});
+}
+
+function dislikePost(requestBody, token) {
+    return axios.post('posts/dislike', requestBody, {headers: {authorization: token}});
+}
+
 export {
     getProfileAndPosts,
-    saveNewComment
+    saveNewComment,
+    likePost,
+    dislikePost
 };

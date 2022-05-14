@@ -20,6 +20,7 @@ function App(props) {
         userId: props.userId,
         role: props.role,
         userName: props.userName,
+        userLastName: props.userLastName,
         token: props.token
     });
 
@@ -48,7 +49,7 @@ function mapDispatchToProps(dispatch) {
             dispatch({
                 type: 'SET_AUTH_FIELDS', token: user.token,
                 userName: user.userName, role: user.role,
-                userId: user.userId
+                userLastName: user.userLastName, userId: user.userId
             })
         }
     }

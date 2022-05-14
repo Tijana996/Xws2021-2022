@@ -1,15 +1,44 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Comment from "../comments/Comment";
 
 function Post(props) {
+
+    const [likes, setLikes] = useState([]);
+    const [dislikes, setDislikes] = useState([]);
+
+    useEffect(() => {
+        setLikes(props.post.likes);
+        setDislikes(props.post.dislikes);
+    }, []);
     
     function handleCommentInputChange(event) {
         if (event.key === 'Enter' && event.target.value !== "") {
             props.handleSavingComment(props.post.id, event.target.value);
             event.target.value = "";
         }
-
     }
+
+    function handleLikeClick() {
+        props.likePost(props.post.id).then(response => {
+            setLikes(response.data.likes);
+            setDislikes(response.data.dislikes);
+        });
+    }
+
+    function handleDislikeClick() {
+        props.dislikePost(props.post.id).then(response => {
+            setLikes(response.data.likes);
+            setDislikes(response.data.dislikes);
+        });
+    }
+
+    const isLikedByCurrentUser = likes.some(like => like.userId === props.currentUserId);
+    const isDislikedByCurrentUser = dislikes.some(dislike => dislike.userId === props.currentUserId);
+    const likeButtonClass = isLikedByCurrentUser ? "btn btn-primary" : "btn btn-outline-primary";
+    const dislikeButtonClass = isDislikedByCurrentUser ? "btn btn-danger" : "btn btn-outline-danger";
+
+    const likesText = isLikedByCurrentUser ? `Vama i još ${likes.length - 1} se sviđa ovaj post` : `${likes.length} korsinika voli ovaj post.`;
+    const dislikesText = isDislikedByCurrentUser ? `Vama i još ${dislikes.length - 1} se ne sviđa ovaj post` : `${dislikes.length} korsinika ne voli ovaj post.`;
 
     return (
         <div className="panel w-100 mb-2">
@@ -27,21 +56,19 @@ function Post(props) {
                 <p className="fb-user-status" style={{padding: '10px 0', lineHeight: '20px'}}>{props.post.content}</p>
                 <div className="fb-status-container fb-border" style={{borderTop: '1px solid #ebeef5', margin: '0 -15px 0 -15px', padding: '0 15px'}}>
                     <div className="fb-time-action" style={{padding: '15px 0'}}>
-                    <span title="Like this" style={{marginRight: '5px', color: '#2972a1'}}>Like</span>
-                    <span style={{marginRight: '5px', color: '#5a5a5a'}}>-</span>
-                    <span title="Dislike this" style={{marginRight: '5px', color: '#2972a1'}}>Dislike</span>
-                    <span style={{marginRight: '5px', color: '#5a5a5a'}}>-</span>
-                    <span title="Leave a comment" style={{marginRight: '5px', color: '#2972a1'}}>Comments</span>
+                    <button className={likeButtonClass} onClick={handleLikeClick}>Like</button>
+                    <span style={{marginRight: '10px', color: '#5a5a5a'}}></span>
+                    <button className={dislikeButtonClass} onClick={handleDislikeClick}>Dislike</button>
                 </div>
             </div>
 
             <div className="fb-status-container fb-border fb-gray-bg" style={{borderTop: '1px solid #ebeef5', margin: '0 -15px 0 -15px', padding: '0 15px', background: '#f6f6f6'}}>
                 <div className="fb-time-action like-info" style={{padding: '15px 0'}}>
-                    <span style={{marginRight: '5px', color: '#2972a1'}}>Jhon Due,</span>
-                    <span style={{marginRight: '5px', color: '#2972a1'}}>Danieal Kalion</span>
-                    <span style={{marginRight: '5px', color: '#5a5a5a'}}>and</span>
-                    <span style={{marginRight: '5px', color: '#2972a1'}}>40 more</span>
-                    <span style={{marginRight: '5px', color: '#5a5a5a'}}>like this</span>
+                    <span style={{marginRight: '5px', color: '#2972a1'}}>{likesText}</span>
+                </div>
+
+                <div className="fb-time-action like-info" style={{padding: '15px 0'}}>
+                    <span style={{marginRight: '5px', color: '#2972a1'}}>{dislikesText}</span>
                 </div>
 
                 <ul className="fb-comments" style={{listStyleType: 'none'}}>

@@ -1,6 +1,7 @@
 package app.dtos;
 
 import app.models.Comment;
+import app.models.UserInReaction;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -21,4 +22,8 @@ public class PostDTO {
     private String userLastName;
 
     private List<Comment> comments;
+
+    private List<UserInReaction> likes;
+
+    private List<UserInReaction> dislikes;
 }

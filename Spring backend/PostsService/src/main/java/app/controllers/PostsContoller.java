@@ -1,8 +1,11 @@
 package app.controllers;
 
 import app.dtos.PostDTO;
+import app.dtos.ReactionRequestDTO;
+import app.dtos.ReactionsAfterUpdateDTO;
 import app.dtos.SavePostDTO;
 import app.models.Post;
+import app.models.UserInReaction;
 import app.repositories.PostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,9 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController()
@@ -36,6 +38,8 @@ public class PostsContoller {
             dto.setUserName(post.getUserName());
             dto.setUserLastName(post.getUserLastName());
             dto.setComments(post.getComments() != null ? post.getComments() : new ArrayList<>());
+            dto.setLikes(post.getLikes() != null ? post.getLikes() : new ArrayList<>());
+            dto.setDislikes(post.getDislikes() != null ? post.getDislikes() : new ArrayList<>());
             dtos.add(dto);
         });
 
@@ -50,8 +54,60 @@ public class PostsContoller {
         newPost.setTimestamp(LocalDateTime.now());
         newPost.setUserName(requestBody.getUserName());
         newPost.setUserLastName(requestBody.getUserLastName());
+        newPost.setLikes(new ArrayList<>());
+        newPost.setDislikes(new ArrayList<>());
 
         postsRepository.save(newPost);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/like")
+    ResponseEntity<?> likePost(@RequestBody ReactionRequestDTO requestBody) {
+        Optional<Post> optional = postsRepository.findById(requestBody.getPostId());
+
+        if (optional.isPresent()) {
+            Post post = optional.get();
+            UserInReaction userInReaction = new UserInReaction(requestBody.getUserId(), requestBody.getUserName(), requestBody.getUserLastName());
+
+            if (post.getLikes().contains(userInReaction)) {
+                post.setLikes(post.getLikes().stream().filter(like -> !like.getUserId().equals(requestBody.getUserId())).collect(Collectors.toList()));
+            } else {
+                post.getLikes().add(userInReaction);
+                post.setDislikes(post.getDislikes().stream().filter(dl -> !dl.getUserId().equals(requestBody.getUserId())).collect(Collectors.toList()));
+            }
+
+            postsRepository.save(post);
+
+            ReactionsAfterUpdateDTO dto = new ReactionsAfterUpdateDTO(post.getLikes(), post.getDislikes());
+
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/dislike")
+    ResponseEntity<?> dislikePost(@RequestBody ReactionRequestDTO requestBody) {
+        Optional<Post> optional = postsRepository.findById(requestBody.getPostId());
+
+        if (optional.isPresent()) {
+            Post post = optional.get();
+            UserInReaction userInReaction = new UserInReaction(requestBody.getUserId(), requestBody.getUserName(), requestBody.getUserLastName());
+
+            if (post.getDislikes().contains(userInReaction)) {
+                post.setDislikes(post.getDislikes().stream().filter(dl -> !dl.getUserId().equals(requestBody.getUserId())).collect(Collectors.toList()));
+            } else {
+                post.getDislikes().add(userInReaction);
+                post.setLikes(post.getLikes().stream().filter(like -> !like.getUserId().equals(requestBody.getUserId())).collect(Collectors.toList()));
+            }
+
+            postsRepository.save(post);
+
+            ReactionsAfterUpdateDTO dto = new ReactionsAfterUpdateDTO(post.getLikes(), post.getDislikes());
+
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

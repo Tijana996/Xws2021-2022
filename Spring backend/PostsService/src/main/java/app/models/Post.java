@@ -26,4 +26,8 @@ public class Post {
     private String userLastName;
 
     private List<Comment> comments;
+
+    private List<UserInReaction> likes;
+
+    private List<UserInReaction> dislikes;
 }

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { getProfileAndPosts, saveNewComment } from './ProfileService';
+import { getProfileAndPosts, saveNewComment, likePost, dislikePost } from './ProfileService';
 import { connect } from 'react-redux';
 import Post from '../post/Post';
 import { saveNewPost } from '../post/PostService';
@@ -65,6 +65,28 @@ function Profile(props) {
             });
         });
     }
+
+    function handleLikePost(postId) {
+        const requestBody = {
+            userId: props.userId,
+            userName: props.userName,
+            userLastName: props.userLastName,
+            postId
+        };
+
+        return likePost(requestBody, props.token);
+    }
+
+    function handleDislikePost(postId) {
+        const requestBody = {
+            userId: props.userId,
+            userName: props.userName,
+            userLastName: props.userLastName,
+            postId
+        };
+
+        return dislikePost(requestBody, props.token);
+    }
     
     return (
         <div className="body-replica" style={{color: "#797979", background: "#ddd", fontFamily: "'Open Sans', sans-serif", padding: "0px !important", margin: "0px !important", fontSize: "13px", textRendering: "optimizeLegibility", WebkitFontSmoothing: "antialiased", MozFontSmoothing: "antialiased", MarginTop: "20px"}}>
@@ -104,7 +126,8 @@ function Profile(props) {
                     <h5 className="mt-5">Profil je privatan.</h5> :
                     <>
                         {profile.posts.length === 0 && <h5 className="mt-5">Nema dosadašnjih objava.</h5>}
-                        {profile.posts.map(post => <Post handleSavingComment={saveComment} key={post.id} post={post} commentingAllowed={props.userId !== null} />)}
+                        {profile.posts.map(post => <Post key={post.id} post={post} currentUserId={props.userId} commentingAllowed={props.userId !== null} 
+                                                         likePost={handleLikePost} handleSavingComment={saveComment} dislikePost={handleDislikePost} />)}
                     </>
                 }
                 
@@ -118,7 +141,9 @@ function Profile(props) {
 function mapStateToProps(state) {
     return {
         userId: state.userId,
-        token: state.token
+        token: state.token,
+        userName: state.userName,
+        userLastName: state.userLastName,
     }
 }
 

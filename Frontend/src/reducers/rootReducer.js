@@ -11,6 +11,7 @@ const rootReducer = (state = initState, action) => {
             ...state,
             token: 'Bearer ' + action.token,
             userName: action.userName,
+            userLastName: action.userLastName,
             role: action.role,
             userId: action.userId
         }
