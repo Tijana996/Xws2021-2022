@@ -23,7 +23,11 @@ public class PostDTO {
 
     private List<Comment> comments;
 
+    private String imagePath;
+
     private List<UserInReaction> likes;
 
     private List<UserInReaction> dislikes;
+
+    private String link;
 }

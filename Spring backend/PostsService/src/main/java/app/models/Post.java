@@ -30,4 +30,8 @@ public class Post {
     private List<UserInReaction> likes;
 
     private List<UserInReaction> dislikes;
+
+    private String image;
+
+    private String link;
 }

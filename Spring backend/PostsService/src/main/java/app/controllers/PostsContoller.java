@@ -40,6 +40,8 @@ public class PostsContoller {
             dto.setComments(post.getComments() != null ? post.getComments() : new ArrayList<>());
             dto.setLikes(post.getLikes() != null ? post.getLikes() : new ArrayList<>());
             dto.setDislikes(post.getDislikes() != null ? post.getDislikes() : new ArrayList<>());
+            dto.setImagePath(post.getImage());
+            dto.setLink(post.getLink());
             dtos.add(dto);
         });
 
@@ -54,8 +56,10 @@ public class PostsContoller {
         newPost.setTimestamp(LocalDateTime.now());
         newPost.setUserName(requestBody.getUserName());
         newPost.setUserLastName(requestBody.getUserLastName());
+        newPost.setImage(requestBody.getImage());
         newPost.setLikes(new ArrayList<>());
         newPost.setDislikes(new ArrayList<>());
+        newPost.setLink(requestBody.getLink());
 
         postsRepository.save(newPost);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -17,9 +17,14 @@ function dislikePost(requestBody, token) {
     return axios.post('posts/dislike', requestBody, {headers: {authorization: token}});
 }
 
+function getImagesURL() {
+    return axios.defaults.baseURL + "upload/";
+}
+
 export {
     getProfileAndPosts,
     saveNewComment,
     likePost,
-    dislikePost
+    dislikePost,
+    getImagesURL
 };

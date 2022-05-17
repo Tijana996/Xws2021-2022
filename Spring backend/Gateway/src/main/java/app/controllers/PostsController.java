@@ -8,7 +8,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +23,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/posts")
 public class PostsController {
-
+    private final String IMAGES_FOLDER = "Gateway/src/main/resources/static/upload/";
     @Autowired
     @Qualifier("postServicesRestTemplate")
     RestTemplate postServicesRestTemplate;
@@ -51,16 +56,38 @@ public class PostsController {
         }
     }
 
-    @PostMapping("")
-    ResponseEntity<?> saveNewPost(@RequestHeader Optional<String> authorization, @RequestBody SavePostDTO requestData) {
+    @PostMapping(path = "", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    ResponseEntity<?> saveNewPost(@RequestHeader Optional<String> authorization, @ModelAttribute() SavePostDTO requestData, @RequestParam(value ="file", required=false) MultipartFile file) {
         if (!jwtUtil.validateHeader(authorization)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        String fileName = "";
+        if (file != null) {
+            Path parentDir = Paths.get(IMAGES_FOLDER);
+            if (!Files.exists(parentDir))
+                try {
+                    Files.createDirectories(parentDir);
+                } catch (IOException ex) {
+                    return ResponseEntity.internalServerError().body("Server error");
+                }
+
+
+            fileName = System.currentTimeMillis() + file.getOriginalFilename();
+            Path path = Paths.get(IMAGES_FOLDER + fileName);
+            try {
+                Files.write(path, file.getBytes());
+            } catch (IOException exception) {
+                exception.printStackTrace();
+                return ResponseEntity.badRequest().body("Bad image sent");
+            }
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-        HttpEntity<SavePostDTO> requestBody = new HttpEntity<>(requestData, headers);
+        HttpEntity<SavePostStringImageDTO> requestBody = new HttpEntity<>(new SavePostStringImageDTO(requestData.getContent(),
+                requestData.getUserId(), requestData.getUserName(), requestData.getUserLastName(), fileName, requestData.getLink()), headers);
         try {
             return postServicesRestTemplate.postForEntity("/posts", requestBody, String.class);
         } catch (CustomRestTemplateError error) {

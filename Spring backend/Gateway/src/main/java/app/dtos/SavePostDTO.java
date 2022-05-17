@@ -2,6 +2,7 @@ package app.dtos;
 
 import lombok.Data;
 
+
 @Data
 public class SavePostDTO {
     private String content;
@@ -11,4 +12,7 @@ public class SavePostDTO {
     private String userName;
 
     private String userLastName;
+
+    private String link;
+
 }

@@ -12,6 +12,9 @@ public class PostDTO {
     private LocalDateTime timestamp;
     private String userId;
     private String userName;
+    private String imagePath;
     private String userLastName;
     private List<CommentResponseDTO> comments;
+    private List<UserInReactionDTO> likes;
+    private List<UserInReactionDTO> dislikes;
 }

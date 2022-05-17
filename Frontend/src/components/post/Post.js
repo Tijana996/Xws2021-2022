@@ -54,6 +54,11 @@ function Post(props) {
 
             <div className="clearfix" />
                 <p className="fb-user-status" style={{padding: '10px 0', lineHeight: '20px'}}>{props.post.content}</p>
+
+                {props.post.imagePath && <img className="img-fluid" src={props.getImagesURL() + props.post.imagePath} height="500px" width="100%" />}
+
+                {props.post.link && <a href={props.post.link} target="_blank">{props.post.link}</a>}
+
                 <div className="fb-status-container fb-border" style={{borderTop: '1px solid #ebeef5', margin: '0 -15px 0 -15px', padding: '0 15px'}}>
                     <div className="fb-time-action" style={{padding: '15px 0'}}>
                     <button className={likeButtonClass} onClick={handleLikeClick}>Like</button>
