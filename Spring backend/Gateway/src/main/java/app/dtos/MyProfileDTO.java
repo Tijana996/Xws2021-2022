@@ -10,4 +10,6 @@ public class MyProfileDTO {
     private String lastName;
     private boolean privateProfile;
     private List<PostDTO> posts;
+    private String followingStatus;
+    private List<FollowerDTO> requests;
 }

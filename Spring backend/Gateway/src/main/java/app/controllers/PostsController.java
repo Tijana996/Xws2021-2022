@@ -14,9 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -33,20 +31,45 @@ public class PostsController {
     RestTemplate userServicesRestTemplate;
 
     @Autowired
+    @Qualifier("followingServicesRestTemplate")
+    RestTemplate followingServicesRestTemplate;
+
+    @Autowired
     JWTUtil jwtUtil;
 
     @GetMapping("/user/{userId}")
     ResponseEntity<?> getPostsByUser(@RequestHeader Optional<String> authorization, @PathVariable String userId) {
+        String currentUserId = jwtUtil.getUserIdFromToken(authorization);
 
         try {
             UserDataDTO userData = userServicesRestTemplate.getForEntity("/users/" + userId, UserDataDTO.class).getBody();
             try {
-                List posts = postServicesRestTemplate.getForEntity("/posts/user/" + userId, List.class).getBody();
                 MyProfileDTO myProfile = new MyProfileDTO();
                 myProfile.setName(userData.getName());
                 myProfile.setLastName(userData.getSurname());
                 myProfile.setPrivateProfile(userData.isPrivateProfile());
-                myProfile.setPosts(posts);
+                myProfile.setFollowingStatus(null);
+                myProfile.setRequests(Collections.emptyList());
+
+                if (currentUserId != null && !currentUserId.equals(userId)) {
+                    String url = "/following/?currentUserId=" + currentUserId + "&userToFollowId=" + userId;
+                    FollowingResponseDTO followingResponseDTO = followingServicesRestTemplate.getForEntity(url, FollowingResponseDTO.class).getBody();
+                    myProfile.setFollowingStatus(followingResponseDTO.getStatus());
+                } else if (currentUserId != null && currentUserId.equals(userId) && myProfile.isPrivateProfile()) {
+                    String url = "/following/" + currentUserId + "/requests";
+                    List<FollowerDTO> requests = followingServicesRestTemplate.getForEntity(url, List.class).getBody();
+                    myProfile.setRequests(requests);
+                }
+
+                myProfile.setPosts(new ArrayList<>());
+                boolean hidePosts = (myProfile.isPrivateProfile() && (myProfile.getFollowingStatus() == "NOT_FOLLOWING" || myProfile.getFollowingStatus() == "PENDING"))
+                        || (myProfile.getFollowingStatus() == null && myProfile.isPrivateProfile());
+
+                if (!hidePosts) {
+                    List posts = postServicesRestTemplate.getForEntity("/posts/user/" + userId, List.class).getBody();
+                    myProfile.setPosts(posts);
+                }
+
                 return new ResponseEntity<>(myProfile, HttpStatus.OK);
             } catch (CustomRestTemplateError error) {
                 return new ResponseEntity<>(error.getMessage(), error.getStatusCode());

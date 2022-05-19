@@ -26,7 +26,7 @@ public class JWTUtil {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String validateTokenAndRetrieveSubject(String token)throws JWTVerificationException {
+    public String validateTokenAndRetrieveSubject(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withSubject("User Details")
                 .withIssuer("YOUR APPLICATION/PROJECT/COMPANY NAME")
@@ -37,11 +37,30 @@ public class JWTUtil {
 
     public boolean validateHeader(Optional<String> header) {
         if (header.isPresent()) {
-            String parsedHeader = header.get().split(" ")[1];
-            String userId = this.validateTokenAndRetrieveSubject(parsedHeader);
-            return userId != null;
+            try {
+                String parsedHeader = header.get().split(" ")[1];
+                String userId = this.validateTokenAndRetrieveSubject(parsedHeader);
+                return userId != null;
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         return false;
     }
+
+    public String getUserIdFromToken(Optional<String> header) {
+        if (header.isPresent()) {
+            try {
+                String parsedHeader = header.get().split(" ")[1];
+                return this.validateTokenAndRetrieveSubject(parsedHeader);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+
 }

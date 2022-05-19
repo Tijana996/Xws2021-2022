@@ -18,4 +18,9 @@ public class RestTemplatesConfig {
     public RestTemplate postsServicesRestTemplate(RestTemplateBuilder builder) {
         return builder.rootUri("http://localhost:8081/").errorHandler(new RestTemplateErrorHandler()).build();
     }
+
+    @Bean("followingServicesRestTemplate")
+    public RestTemplate followingServicesRestTemplate(RestTemplateBuilder builder) {
+        return builder.rootUri("http://localhost:8083/").errorHandler(new RestTemplateErrorHandler()).build();
+    }
 }

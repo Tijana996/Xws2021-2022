@@ -1,10 +1,11 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { getProfileAndPosts, saveNewComment, likePost, dislikePost, getImagesURL } from './ProfileService';
+import { getProfileAndPosts, saveNewComment, likePost, dislikePost, getImagesURL, followUser, acceptFollowingRequest, declineFollowingRequest } from './ProfileService';
 import { connect } from 'react-redux';
 import Post from '../post/Post';
 import { saveNewPost } from '../post/PostService';
 import { faImage, faLink } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import FollowingRequest from '../following-request/FollowingRequest';
 
 function Profile(props) {
 
@@ -12,7 +13,8 @@ function Profile(props) {
         name: "",
         lastName: "",
         isPrivateProfile: false,
-        posts: []
+        posts: [],
+        requests: []
     });
 
     const newPostText = useRef();
@@ -22,6 +24,7 @@ function Profile(props) {
     const [isLinkShown, setLinkShown] = useState(false);
     const [enteredLink, setEnteredLink] = useState("");
     const [urlError, setUrlError] = useState(false);
+    const [followingStatus, setFollowingStatus] = useState(null);
 
     useEffect(() => {
         const userId = props.requestUserId ? props.requestUserId : props.userId;
@@ -30,8 +33,10 @@ function Profile(props) {
                 name: response.data.name,
                 lastName: response.data.lastName,
                 isPrivateProfile: response.data.privateProfile,
-                posts: response.data.posts
+                posts: response.data.posts,
+                requests: response.data.requests
             });
+            setFollowingStatus(response.data.followingStatus);
         });
     }, []);
 
@@ -56,7 +61,8 @@ function Profile(props) {
                 setProfile({
                     name: response.data.name,
                     lastName: response.data.lastName,
-                    posts: response.data.posts
+                    posts: response.data.posts,
+                    requests: response.data.requests
                 });
                 setImageLoaded(false);
                 setEnteredLink("");
@@ -77,7 +83,8 @@ function Profile(props) {
                 setProfile({
                     name: response.data.name,
                     lastName: response.data.lastName,
-                    posts: response.data.posts
+                    posts: response.data.posts,
+                    requests: response.data.requests
                 });
             });
         });
@@ -131,6 +138,59 @@ function Profile(props) {
         const res = event.target.value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
         setUrlError(res === null);
     }
+
+    function handleFollow() {
+        const requestBody = {
+            userToFollowId: props.requestUserId,
+            currentUserId: props.userId,
+            currentUserName: props.userName,
+            currentUserLastName: props.userLastName
+        };
+
+        followUser(requestBody, props.token).then(response => {
+            setFollowingStatus(response.data.status);
+        });
+    }
+
+    function handleAcceptRequest(userId, userName, userLastName) {
+        const requestBody = {
+            currentUserId: props.userId,
+            currentUserName: props.userName,
+            currentUserLastName: props.userLastName,
+            requestUserId: userId,
+            requestUserName: userName,
+            requestUserLastName: userLastName,
+        };
+        
+        acceptFollowingRequest(requestBody, props.token).then(response => {
+            setProfile(prev => {
+                return {
+                    ...prev,
+                    requests: prev.requests.filter(x => x.userId != userId)
+                }
+            });
+        });
+    }
+
+    function handleDeclineRequest(userId, userName, userLastName) {
+        const requestBody = {
+            currentUserId: props.userId,
+            currentUserName: props.userName,
+            currentUserLastName: props.userLastName,
+            requestUserId: userId,
+            requestUserName: userName,
+            requestUserLastName: userLastName,
+        };
+
+        declineFollowingRequest(requestBody, props.token).then(response => {
+            setProfile(prev => {
+                return {
+                    ...prev,
+                    requests: prev.requests.filter(x => x.userId != userId)
+                }
+            });
+        });
+    }
     
     return (
         <div className="body-replica" style={{color: "#797979", background: "#ddd", fontFamily: "'Open Sans', sans-serif", padding: "0px !important", margin: "0px !important", fontSize: "13px", textRendering: "optimizeLegibility", WebkitFontSmoothing: "antialiased", MozFontSmoothing: "antialiased", MarginTop: "20px"}}>
@@ -152,9 +212,24 @@ function Profile(props) {
                             <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" style={{width: '140px', height: '140px', borderRadius: '50%', WebkitBorderRadius: '50%', marginTop: '-90px', border: '3px solid #fff'}} />
                         </div>
 
-                        <div style={{height: 50}}></div>
+                        <div style={{height: 50}}>
+                        {followingStatus &&
+                            <div style={{textAlign: 'right'}}>
+                                {followingStatus === 'NOT_FOLLOWING' && <button className='btn btn-primary' onClick={handleFollow}>Zaprati</button>}
+                                {followingStatus === 'PENDING' && <button className='btn btn-secondary' onClick={handleFollow}>Na čekanju</button>}
+                                {followingStatus === 'FOLLOWING' && <button className='btn btn-danger' onClick={handleFollow}>Otprati</button>}
+                            </div>
+                        }
+                        </div>
                     </div>
                 </div>
+
+                {profile.requests.length > 0 && 
+                <div className="panel" style={{width: "100%", marginBottom: '20px'}}>
+                    <h3>Zahtevi za pracenje</h3>
+                    {profile.requests.map(request => <FollowingRequest key={request.userId} request={request} handleAcceptRequest={handleAcceptRequest} handleDeclineRequest={handleDeclineRequest} />)}
+                </div>
+                }
 
                 <div className="panel profile-info" style={{width: "100%", marginBottom: '20px'}} hidden={props.requestUserId}>
                     <form>
@@ -177,7 +252,7 @@ function Profile(props) {
                     </div>
                 </div>
                 
-                {props.requestUserId && profile.isPrivateProfile ? 
+                {props.requestUserId && profile.isPrivateProfile && followingStatus !== 'FOLLOWING' ? 
                     <h5 className="mt-5">Profil je privatan.</h5> :
                     <>
                         {profile.posts.length === 0 && <h5 className="mt-5">Nema dosadašnjih objava.</h5>}
